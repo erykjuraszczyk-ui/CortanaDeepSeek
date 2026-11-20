@@ -1,21 +1,17 @@
-# Local Memory — Cortana DeepSeek 0.2.0
+# Local Memory — Cortana DeepSeek 1.0.0
 
-## Zakres
-Wersja 0.2.0 dodaje trwałe archiwum rozmów oparte na Android SQLiteOpenHelper. Baza `cortana_local_memory.db` znajduje się w prywatnym katalogu aplikacji.
+- Historia rozmów: SQLite, maksymalnie 500 ostatnich wiadomości.
+- Notatki pamięci: dodawane jawnie przez użytkownika, do 3000 znaków na notatkę.
+- Notatki są zapisywane lokalnie i dołączane do kontekstu modelu jako dane, nie instrukcje.
+- Notatkę można usunąć pojedynczo; osobna akcja usuwa wszystkie notatki.
+- Czyszczenie historii czatu nie usuwa notatek.
+- Migracja bazy danych z wersji 0.2.0 (schema 1) do 1.0.0 (schema 2) zachowuje historię wiadomości.
 
-## Zachowanie
-- Wiadomości użytkownika i asystenta są zapisywane lokalnie.
-- Po uruchomieniu aplikacja odtwarza maksymalnie 500 ostatnich wiadomości.
-- Do kontekstu modelu trafia maksymalnie 20 ostatnich elementów rozmowy w bieżącym działaniu aplikacji.
-- Użytkownik może wyczyścić historię po potwierdzeniu.
-- Dane nie są synchronizowane z usługą zewnętrzną.
-
-## Granice
-To jest historia czatu, nie pamięć semantyczna. Nie wyciąga automatycznie faktów, nie tworzy profilu użytkownika i nie przeszukuje archiwum embeddingami. Kolejny etap powinien dodać jawne, kontrolowane przez użytkownika notatki pamięci, wyszukiwanie oraz eksport/usuwanie danych.
-
-## Test ręczny
-1. Zbuduj i zainstaluj APK 0.2.0.
-2. Wyślij wiadomość przy działającym lokalnym serwerze.
-3. Zamknij aplikację i uruchom ją ponownie — wiadomości powinny wrócić.
-4. Użyj „Wyczyść pamięć” i potwierdź.
-5. Zamknij i uruchom aplikację ponownie — powinna być tylko nowa wiadomość powitalna.
+## Sprawdzenie ręczne
+1. Uruchom lokalny serwer AI i wyślij wiadomość.
+2. Zamknij i otwórz aplikację — historia powinna wrócić.
+3. Dodaj notatkę w zakładce Pamięć.
+4. Zadaj pytanie odnoszące się do notatki — powinna być przekazana w kontekście modelu.
+5. Usuń notatkę i sprawdź, że znika z listy.
+6. Wyczyść historię czatu — notatka powinna pozostać.
+7. Wyczyść wszystkie notatki — model nie powinien otrzymać ich w kolejnych zapytaniach.

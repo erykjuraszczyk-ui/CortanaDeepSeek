@@ -1,34 +1,50 @@
-# Cortana DeepSeek — Local AI Android
+# Cortana DeepSeek 1.0.0 — Local AI for Android
 
-Natywna aplikacja Android 13+ (minSdk 33), Kotlin + Jetpack Compose. Tryb Local AI korzysta z lokalnego serwera zgodnego z OpenAI API.
+Finalne wydanie Android 13+ (API 33–35), Kotlin + Jetpack Compose. Aplikacja łączy się z lokalnym silnikiem llama.cpp zgodnym z API OpenAI.
 
-## v0.2.0
-- Holograficzny ekran i czat.
-- Lokalny klient llama.cpp: `http://127.0.0.1:8080/v1/chat/completions`.
-- **Local Memory:** historia rozmów zapisywana w prywatnej bazie SQLite na urządzeniu.
-- Ostatnie 500 wiadomości jest odtwarzanych po ponownym uruchomieniu aplikacji.
-- Przycisk „Wyczyść pamięć” usuwa lokalną historię po potwierdzeniu.
-- Bez synchronizacji historii z chmurą; brak klucza API i telemetrii.
-- Evolution Core: propozycje zmian, testy i ręczna akceptacja; bez samomodyfikacji APK.
+## Funkcje 1.0.0
 
-## Lokalny model
-APK jest klientem lokalnego silnika, nie zawiera wag GGUF ani runtime llama.cpp. Model i `llama-server` uruchamiasz osobno. Na RedMagic 7 (12 GB RAM) zacznij od modelu 1.5B–3B Q4; większe mogą być wolne i pamięciożerne.
+- Lokalny czat AI — bez wysyłania promptów do publicznego API.
+- Historia SQLite — do 500 wiadomości zachowanych po zamknięciu aplikacji.
+- Pamięć jawna — notatki zapisane świadomie przez użytkownika; każdą można usunąć osobno lub skasować wszystkie.
+- Trwałe ustawienia — endpoint, identyfikator modelu i instrukcja systemowa.
+- Test serwera przez endpoint /health.
+- Opcjonalne rozpoznawanie polskiej mowy i odczyt odpowiedzi przez Android TTS.
+- Evolution Core — kontrolowany proces propozycji zmian, testów i zatwierdzania.
+- Blokowanie publicznych hostów; dozwolone localhost, .local i lokalne/prywatne adresy IP.
 
-Przykład uruchomienia w środowisku z llama.cpp:
-```bash
+## Ważne ograniczenie modelu
+
+APK nie zawiera wag GGUF ani skompilowanego runtime llama.cpp. Na urządzeniu musi działać osobny lokalny serwer kompatybilny z API OpenAI. Wydanie 1.0.0 nie jest samodzielnym pakietem z wbudowanym modelem. Model nie wykonuje kodu systemowego ani nie podmienia aplikacji.
+
+Na urządzeniu z 12 GB RAM zacznij od modelu 1.5B–3B w kwantyzacji Q4. Większe modele mogą być wolniejsze i zużywać więcej pamięci.
+
+Przykład uruchomienia serwera:
+
+~~~bash
 llama-server -m /ścieżka/model.gguf --host 127.0.0.1 --port 8080 -c 2048 -ngl 0
-```
-Nie wystawiaj portu serwera do internetu.
+~~~
 
-## Budowanie
-GitHub Actions → workflow **Build CortanaDeepSeek APK** → Run workflow. Artefakt `CortanaDeepSeek-debug` zawiera APK debug. Wymagany JDK 17 i Android SDK 35.
+Ustaw w aplikacji http://127.0.0.1:8080. Dla komputera w tej samej sieci użyj jego prywatnego IP. Nie wystawiaj portu do internetu.
 
-## Bezpieczeństwo i prywatność
-- Historia pozostaje w prywatnym katalogu danych aplikacji.
-- Odinstalowanie aplikacji usuwa jej lokalną bazę.
-- „Wyczyść pamięć” usuwa historię rozmów.
-- Nie zapisuj sekretów w repozytorium.
-- Kod wygenerowany przez AI wymaga przeglądu i testów; aktualizacje instaluj z zaufanego źródła.
+## Budowanie i instalacja
 
-## Ograniczenia tej wersji
-Pamięć jest lokalnym archiwum rozmów, a nie mechanizmem semantycznego przypominania. APK nie zawiera jeszcze wbudowanego silnika GGUF, rozmowy głosowej ani hologramu 3D.
+GitHub Actions → Build CortanaDeepSeek APK → Run workflow.
+
+- Artefakt CortanaDeepSeek-1.0.0-debug zawiera instalowalny debug APK podpisany kluczem CI.
+- Artefakt CortanaDeepSeek-1.0.0-release-unsigned jest niepodpisany i wymaga podpisania własnym kluczem przed dystrybucją.
+
+Wymagania buildu: JDK 17, Android SDK 35, Gradle 8.9.
+
+## Prywatność
+
+- Wiadomości i notatki pozostają w prywatnej bazie aplikacji.
+- Brak synchronizacji chmurowej i publicznego klucza API.
+- Klient blokuje publiczne hosty; nie podąża za przekierowaniami HTTP.
+- Mikrofon jest używany dopiero po akcji użytkownika i przyznaniu zgody.
+- Rozpoznawanie mowy i TTS mogą zależeć od usług systemowych; offline ASR/TTS nie jest gwarantowany.
+- Odinstalowanie usuwa lokalną bazę aplikacji.
+
+## Samodoskonalenie
+
+Evolution Core realizuje cykl: analiza → propozycja patcha → testy → przegląd → zgoda → nowy build. Model nie wykonuje kodu, nie ma dostępu do powłoki i nie instaluje samodzielnie aktualizacji.
