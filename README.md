@@ -31,8 +31,10 @@ Ustaw w aplikacji http://127.0.0.1:8080. Dla komputera w tej samej sieci użyj j
 
 GitHub Actions → Build CortanaDeepSeek APK → Run workflow.
 
-- Artefakt CortanaDeepSeek-1.0.0-debug zawiera instalowalny debug APK podpisany kluczem CI.
-- Artefakt CortanaDeepSeek-1.0.0-release-unsigned jest niepodpisany i wymaga podpisania własnym kluczem przed dystrybucją.
+- Artefakt CortanaDeepSeek-1.0.0-debug zawiera instalowalny APK podpisany tymczasowym kluczem debug środowiska CI.
+- Do instalacji na telefonie pobierz artefakt ZIP, rozpakuj go i otwórz plik APK.
+- Jeżeli Android zgłasza konflikt podpisu z wcześniejszą wersją, odinstaluj starą wersję testową i zainstaluj nową.
+- Wydanie sklepowe wymaga osobnego podpisu kluczem release przechowywanym poza repozytorium.
 
 Wymagania buildu: JDK 17, Android SDK 35, Gradle 8.9.
 
@@ -40,7 +42,7 @@ Wymagania buildu: JDK 17, Android SDK 35, Gradle 8.9.
 
 - Wiadomości i notatki pozostają w prywatnej bazie aplikacji.
 - Brak synchronizacji chmurowej i publicznego klucza API.
-- Klient blokuje publiczne hosty; nie podąża za przekierowaniami HTTP.
+- Klient blokuje publiczne hosty i nie podąża za przekierowaniami HTTP.
 - Mikrofon jest używany dopiero po akcji użytkownika i przyznaniu zgody.
 - Rozpoznawanie mowy i TTS mogą zależeć od usług systemowych; offline ASR/TTS nie jest gwarantowany.
 - Odinstalowanie usuwa lokalną bazę aplikacji.
