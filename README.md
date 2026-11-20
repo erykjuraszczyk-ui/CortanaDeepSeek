@@ -1,52 +1,52 @@
 # Cortana DeepSeek 1.0.0 — Local AI for Android
 
-Finalne wydanie Android 13+ (API 33–35), Kotlin + Jetpack Compose. Aplikacja łączy się z lokalnym silnikiem llama.cpp zgodnym z API OpenAI.
+Natywna aplikacja Android 13+ (API 33–35), Kotlin + Jetpack Compose. To klient lokalnego silnika AI zgodnego z API OpenAI.
 
-## Funkcje 1.0.0
+## Funkcje wydania 1.0.0
 
-- Lokalny czat AI — bez wysyłania promptów do publicznego API.
-- Historia SQLite — do 500 wiadomości zachowanych po zamknięciu aplikacji.
-- Pamięć jawna — notatki zapisane świadomie przez użytkownika; każdą można usunąć osobno lub skasować wszystkie.
-- Trwałe ustawienia — endpoint, identyfikator modelu i instrukcja systemowa.
-- Test serwera przez endpoint /health.
-- Opcjonalne rozpoznawanie polskiej mowy i odczyt odpowiedzi przez Android TTS.
-- Evolution Core — kontrolowany proces propozycji zmian, testów i zatwierdzania.
-- Blokowanie publicznych hostów; dozwolone localhost, .local i lokalne/prywatne adresy IP.
+- Lokalny czat AI — komunikacja z lokalnym llama-server.
+- Historia SQLite — do 500 ostatnich wiadomości zapisywanych w prywatnej bazie aplikacji.
+- Pamięć jawna — notatki dodawane świadomie przez użytkownika; można usuwać pojedyncze wpisy lub całą pamięć.
+- Ustawienia trwałe — adres serwera, identyfikator modelu i prompt systemowy są zapamiętywane.
+- Test połączenia — kontrola endpointu /health.
+- Mowa — opcjonalne rozpoznawanie polskiej mowy i odczytywanie odpowiedzi przez Android TTS. Dostępność i działanie offline zależą od usług zainstalowanych w telefonie.
+- Evolution Core — kontrolowany proces analizy, propozycji patcha, testowania i zatwierdzania zmian.
+- Ochrona sieciowa — blokowanie publicznych hostów; dozwolone jest localhost i prywatne adresy IP.
 
-## Ważne ograniczenie modelu
+## Wymagany silnik lokalny
 
-APK nie zawiera wag GGUF ani skompilowanego runtime llama.cpp. Na urządzeniu musi działać osobny lokalny serwer kompatybilny z API OpenAI. Wydanie 1.0.0 nie jest samodzielnym pakietem z wbudowanym modelem. Model nie wykonuje kodu systemowego ani nie podmienia aplikacji.
+APK nie zawiera wag GGUF ani runtime llama.cpp. Na urządzeniu musi działać osobny llama-server kompatybilny z /v1/chat/completions.
 
-Na urządzeniu z 12 GB RAM zacznij od modelu 1.5B–3B w kwantyzacji Q4. Większe modele mogą być wolniejsze i zużywać więcej pamięci.
+Na urządzeniu z 12 GB RAM rozpocznij od modelu 1.5B–3B w kwantyzacji Q4. Większe modele mogą być wolniejsze i zużywać więcej pamięci.
 
-Przykład uruchomienia serwera:
+Przykład uruchomienia:
 
-~~~bash
-llama-server -m /ścieżka/model.gguf --host 127.0.0.1 --port 8080 -c 2048 -ngl 0
-~~~
+    llama-server -m /ścieżka/model.gguf --host 127.0.0.1 --port 8080 -c 2048 -ngl 0
 
-Ustaw w aplikacji http://127.0.0.1:8080. Dla komputera w tej samej sieci użyj jego prywatnego IP. Nie wystawiaj portu do internetu.
+W aplikacji ustaw http://127.0.0.1:8080. Dla serwera na komputerze w tej samej sieci użyj jego prywatnego adresu IP, np. http://192.168.1.50:8080. Nie wystawiaj portu do internetu.
 
-## Budowanie i instalacja
+## Budowanie
 
 GitHub Actions → Build CortanaDeepSeek APK → Run workflow.
 
-- Artefakt CortanaDeepSeek-1.0.0-debug zawiera instalowalny APK podpisany tymczasowym kluczem debug środowiska CI.
-- Do instalacji na telefonie pobierz artefakt ZIP, rozpakuj go i otwórz plik APK.
-- Jeżeli Android zgłasza konflikt podpisu z wcześniejszą wersją, odinstaluj starą wersję testową i zainstaluj nową.
-- Wydanie sklepowe wymaga osobnego podpisu kluczem release przechowywanym poza repozytorium.
+- CortanaDeepSeek-1.0.0-debug — testowy APK debug.
+- CortanaDeepSeek-1.0.0-release-unsigned — APK release bez podpisu; przed dystrybucją wymaga podpisania własnym kluczem.
 
-Wymagania buildu: JDK 17, Android SDK 35, Gradle 8.9.
+CI uruchamia JVM unit tests, assembleDebug i assembleRelease. Wymagania: JDK 17, Android SDK 35, Gradle 8.9.
 
 ## Prywatność
 
-- Wiadomości i notatki pozostają w prywatnej bazie aplikacji.
-- Brak synchronizacji chmurowej i publicznego klucza API.
-- Klient blokuje publiczne hosty i nie podąża za przekierowaniami HTTP.
-- Mikrofon jest używany dopiero po akcji użytkownika i przyznaniu zgody.
-- Rozpoznawanie mowy i TTS mogą zależeć od usług systemowych; offline ASR/TTS nie jest gwarantowany.
-- Odinstalowanie usuwa lokalną bazę aplikacji.
+- Historia i notatki pozostają w prywatnej bazie na urządzeniu.
+- Brak synchronizacji chmurowej i klucza publicznego API.
+- Klient sieciowy odrzuca publiczne hosty.
+- O mikrofon aplikacja prosi dopiero po użyciu przycisku głosowego.
+- ASR/TTS może korzystać z usług systemowych; pełny offline dla głosu nie jest gwarantowany.
+- Odinstalowanie aplikacji usuwa jej lokalną bazę.
 
-## Samodoskonalenie
+## Evolution Core
 
-Evolution Core realizuje cykl: analiza → propozycja patcha → testy → przegląd → zgoda → nowy build. Model nie wykonuje kodu, nie ma dostępu do powłoki i nie instaluje samodzielnie aktualizacji.
+Model nie wykonuje kodu, nie uruchamia poleceń powłoki i nie instaluje aktualizacji. Zmiany przechodzą przez: analiza → propozycja → testy → przegląd → akceptacja → CI. Klucz podpisujący wydania musi być przechowywany poza repozytorium.
+
+## Ograniczenia
+
+Interfejs holograficzny jest stylizacją 2D Compose, nie renderowanym hologramem 3D. Aplikacja nie zawiera jeszcze silnika GGUF osadzonego w APK przez JNI/NDK.

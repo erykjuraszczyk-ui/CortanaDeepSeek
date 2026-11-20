@@ -1,17 +1,22 @@
 # Local Memory — Cortana DeepSeek 1.0.0
 
-- Historia rozmów: SQLite, maksymalnie 500 ostatnich wiadomości.
-- Notatki pamięci: dodawane jawnie przez użytkownika, do 3000 znaków na notatkę.
-- Notatki są zapisywane lokalnie i dołączane do kontekstu modelu jako dane, nie instrukcje.
-- Notatkę można usunąć pojedynczo; osobna akcja usuwa wszystkie notatki.
-- Czyszczenie historii czatu nie usuwa notatek.
-- Migracja bazy danych z wersji 0.2.0 (schema 1) do 1.0.0 (schema 2) zachowuje historię wiadomości.
+## Dane
+Baza cortana_local_memory.db jest przechowywana w prywatnym katalogu aplikacji. Nie ma mechanizmu synchronizacji chmurowej.
 
-## Sprawdzenie ręczne
-1. Uruchom lokalny serwer AI i wyślij wiadomość.
-2. Zamknij i otwórz aplikację — historia powinna wrócić.
-3. Dodaj notatkę w zakładce Pamięć.
-4. Zadaj pytanie odnoszące się do notatki — powinna być przekazana w kontekście modelu.
-5. Usuń notatkę i sprawdź, że znika z listy.
-6. Wyczyść historię czatu — notatka powinna pozostać.
-7. Wyczyść wszystkie notatki — model nie powinien otrzymać ich w kolejnych zapytaniach.
+## Historia
+- Zapisywane są wiadomości użytkownika i asystenta.
+- Aplikacja odtwarza do 500 ostatnich wiadomości.
+- W kontekście jednego żądania do modelu wykorzystywanych jest maksymalnie 20 ostatnich wiadomości.
+- Historia może być wyczyszczona niezależnie od notatek.
+
+## Pamięć jawna
+- Użytkownik sam dodaje notatki.
+- Pamięć przekazuje do modelu maksymalnie 30 ostatnich notatek, ograniczonych do 1200 znaków każda.
+- Notatki są przedstawiane modelowi jako dane kontekstowe, a nie instrukcje.
+- Można usunąć pojedynczą notatkę lub wszystkie notatki.
+
+## Migracja
+Wersja 2 bazy dodaje tabelę memory_notes i zachowuje istniejącą tabelę wiadomości z wersji 0.2.0.
+
+## Granice
+Nie jest to automatyczny profil ani pamięć semantyczna z embeddingami. Użytkownik decyduje, co zostaje zapisane i przekazane modelowi.
