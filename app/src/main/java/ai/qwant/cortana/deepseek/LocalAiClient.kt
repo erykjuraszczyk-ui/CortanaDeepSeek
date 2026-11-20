@@ -52,7 +52,7 @@ object LocalAiClient {
             .url(url)
             .post(payload.toString().toRequestBody("application/json".toMediaType()))
             .build()
-        client.newCall(request).execute().use { response ->
+        return client.newCall(request).execute().use { response ->
             val body = response.body?.string().orEmpty()
             if (!response.isSuccessful) {
                 throw IllegalStateException("Serwer zwrócił HTTP " + response.code + ": " + body.take(500))
